@@ -1,10 +1,10 @@
 // Evil Platformer host server: no dependencies. Run: node server.js
 const http=require('http'),fs=require('fs'),path=require('path'),crypto=require('crypto'),os=require('os');
-const PORT=+process.env.PORT||3000,FILE=path.join(__dirname,'evil-platformer-online.html');
+const PORT=+process.env.PORT||3000,FILE=path.join(__dirname,'Evil Platformer.html');
 function lan(){const o=[];for(const l of Object.values(os.networkInterfaces()))for(const i of l)if(i.family==='IPv4'&&!i.internal)o.push('http://'+i.address+':'+PORT);return o}
-const srv=http.createServer((q,r)=>q.url==='/ip'?(r.writeHead(200,{'Content-Type':'application/json'}),r.end(JSON.stringify(lan()))):fs.readFile(FILE,(e,d)=>{
-  if(e){r.writeHead(500);return r.end('evil-platformer-online.html must be next to server.js')}
-  r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)}));
+const srv=http.createServer((q,r)=>q.url==='/ip'?(r.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'}),r.end(JSON.stringify(lan()))):fs.readFile(FILE,(e,d)=>{
+  if(e){r.writeHead(500);return r.end('Evil Platformer.html must be next to server.js')}
+  r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});r.end(d)}));
 const rooms=new Map(),dirty=new Set();let nid=1;
 srv.on('upgrade',(req,sock)=>{
   const key=req.headers['sec-websocket-key'];if(!key){sock.destroy();return}
