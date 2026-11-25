@@ -16,8 +16,7 @@ node server.js          # or: PORT=8080 node server.js
 
 Then open <http://localhost:3000>. Friends on the same network can use the address printed in the console (also available at `/ip`). The server is dependency-free and has WebSocket multiplayer built in.
 
-**GitHub Pages** — `index.html` redirects to the game, so the repo can be published as-is:
-<https://sifrex19-blip.github.io/evilplatformer-mult/>
+**GitHub Pages (optional)** — `index.html` redirects to the game, so the repo can be published statically. In **Settings → Pages**, deploy `main` from the repo root; the game will then be at `https://<your-user>.github.io/evilplatformer-mult/`. PeerJS lobbies work there; the WebSocket `server.js` does not run on Pages.
 
 **Direct P2P** — leave the server field empty and create a lobby; it uses the public PeerJS broker. If that is blocked, host `server.js` and put its address in the server field.
 
