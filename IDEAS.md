@@ -3,6 +3,8 @@
 A working list of things that would make the game more evil, more funny, or more replayable.
 Nothing here is promised; it is a menu to pick from.
 
+> **Status in the current build:** the mutation catalog is fully implemented (56 mutations across four categories), along with most of the trap, level-structure, mode, editor, progression, presentation, and quality-of-life ideas below. Some large or server-authoritative ideas are approximated locally. The **skip token is intentionally excluded** — the game would rather mock you than let you skip the joke. The mutation list here started as the design doc; the shipped definitions live in `MUT_DEFS` inside `Evil Platformer.html`.
+
 Legend: **S** = small change, **M** = medium, **L** = large / new system.
 
 ---
@@ -174,7 +176,7 @@ The level format already has solids (`S`) and hazards (`Hz` with `pop`, `fall`, 
 - **Collectibles** — optional coins that make the level harder while held.
 - **Cursed coins** — collecting one enables a random mutation for the level.
 - **Checkpoints** — real ones, with a twist: they explode after one use.
-- **Skip token** — after 10 deaths on a level, offer a skip that costs 25 deaths.
+- **Skip token** — *intentionally not implemented.* After 10 deaths on a level, a skip would cost 25 deaths. The game prefers to watch.
 - **Practice mode** — infinite retries on the current level, no progress.
 - **Marathon mode** — all levels, one life, no checkpoints.
 

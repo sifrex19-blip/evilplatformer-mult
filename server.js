@@ -1,10 +1,30 @@
 // Evil Platformer host server: no dependencies. Run: node server.js
 const http=require('http'),fs=require('fs'),path=require('path'),crypto=require('crypto'),os=require('os');
-const PORT=+process.env.PORT||3000,FILE=path.join(__dirname,'Evil Platformer.html');
+const PORT=+process.env.PORT||3000,ROOT=__dirname,FILE=path.join(ROOT,'Evil Platformer.html');
+const MIME={'.html':'text/html; charset=utf-8','.webmanifest':'application/manifest+json','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.ico':'image/x-icon'};
 function lan(){const o=[];for(const l of Object.values(os.networkInterfaces()))for(const i of l)if(i.family==='IPv4'&&!i.internal)o.push('http://'+i.address+':'+PORT);return o}
-const srv=http.createServer((q,r)=>q.url==='/ip'?(r.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'}),r.end(JSON.stringify(lan()))):fs.readFile(FILE,(e,d)=>{
-  if(e){r.writeHead(500);return r.end('Evil Platformer.html must be next to server.js')}
-  r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});r.end(d)}));
+function json(r,obj,code=200){r.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Access-Control-Allow-Origin':'*'});r.end(JSON.stringify(obj))}
+function sendFile(r,f){
+  fs.readFile(f,(e,d)=>{
+    if(e){r.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});return r.end('Not found')}
+    r.writeHead(200,{'Content-Type':MIME[path.extname(f).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});r.end(d)
+  })
+}
+const srv=http.createServer((q,r)=>{
+  let name='/';
+  try{name=decodeURIComponent(new URL(q.url,'http://x').pathname)}catch(e){}
+  if(name==='/ip')return json(r,lan());
+  if(name==='/rooms')return json(r,[...rooms].map(([n,set])=>({name:n,n:set.size})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name)));
+  if(name==='/'||name==='/index.html')return sendFile(r,FILE);
+  const safe=path.normalize(name).replace(/^(\.\.[/\\])+/,'');
+  const f=path.join(ROOT,safe);
+  if(!f.startsWith(ROOT+path.sep))return json(r,{error:'bad path'},400);
+  fs.stat(f,(e,st)=>{
+    if(!e&&st.isFile())return sendFile(r,f);
+    // Unknown paths still load the game, matching the old single-file server.
+    return sendFile(r,FILE);
+  });
+});
 const rooms=new Map(),dirty=new Set();let nid=1;
 srv.on('upgrade',(req,sock)=>{
   const key=req.headers['sec-websocket-key'];if(!key){sock.destroy();return}
